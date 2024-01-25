@@ -86,10 +86,7 @@ public class MyCustomControllerBase<T> : ControllerBase
     {
         try
         {
-            var entity = await _dbContext
-                .Set<TEntity>()
-                .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Id == id);
+            var entity = await _dbContext.Set<TEntity>().FirstOrDefaultAsync(x => x.Id == id); // no colocar AsNoTracking(), de lo contrario no actualizará
 
             if (entity == null)
             {
@@ -122,10 +119,7 @@ public class MyCustomControllerBase<T> : ControllerBase
                 return BadRequest();
             }
 
-            var entity = await _dbContext
-                .Set<TEntity>()
-                .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Id == id);
+            var entity = await _dbContext.Set<TEntity>().FirstOrDefaultAsync(x => x.Id == id); // no colocar AsNoTracking(), de lo contrario no actualizará
 
             if (entity == null)
             {
@@ -160,10 +154,7 @@ public class MyCustomControllerBase<T> : ControllerBase
     {
         try
         {
-            var entityExists = await _dbContext
-                .Set<TEntity>()
-                .AsNoTracking()
-                .AnyAsync(x => x.Id == id);
+            var entityExists = await _dbContext.Set<TEntity>().AnyAsync(x => x.Id == id);
 
             if (!entityExists)
             {
