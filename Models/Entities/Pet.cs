@@ -2,7 +2,7 @@
 
 namespace pets_web_api;
 
-public class Pet
+public class Pet : IId
 {
     public int Id { get; set; }
 
