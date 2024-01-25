@@ -13,12 +13,13 @@ public class Startup
 
     public void ConfigurationService(IServiceCollection services)
     {
-        services.AddControllers();
+        services.AddControllers().AddNewtonsoftJson();
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
         services.AddDbContext<ApplicationDbContext>(options =>
             options.UseSqlServer(_configuration.GetConnectionString("DefaultConnection"))
         );
+        services.AddAutoMapper(typeof(Startup));
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment environment)

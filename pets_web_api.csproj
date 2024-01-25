@@ -5,11 +5,10 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0"/>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.1"/>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.1"/>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Controllers\"/>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.1" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.1" />
   </ItemGroup>
 </Project>
