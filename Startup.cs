@@ -20,6 +20,8 @@ public class Startup
             options.UseSqlServer(_configuration.GetConnectionString("DefaultConnection"))
         );
         services.AddAutoMapper(typeof(Startup));
+
+        services.AddScoped<IPetRepository, PetRepository>();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment environment)

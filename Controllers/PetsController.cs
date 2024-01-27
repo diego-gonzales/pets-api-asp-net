@@ -6,34 +6,50 @@ namespace pets_web_api;
 
 [ApiController]
 [Route("api/pets")]
-public class PetsController : MyCustomControllerBase<PetsController>
+public class PetsController : ControllerBase
 {
-    private readonly ApplicationDbContext _dbContext;
-    private readonly IMapper _mapper;
     private readonly ILogger<PetsController> _logger;
+    private readonly IPetRepository _petRepository;
 
-    public PetsController(
-        ApplicationDbContext dbContext,
-        IMapper mapper,
-        ILogger<PetsController> logger
-    )
-        : base(dbContext, mapper, logger)
+    public PetsController(IPetRepository petRepository, ILogger<PetsController> logger)
     {
-        _dbContext = dbContext;
-        _mapper = mapper;
         _logger = logger;
+        _petRepository = petRepository;
     }
 
     [HttpGet]
     public async Task<ActionResult<List<PetDTO>>> Get()
     {
-        return await Get<Pet, PetDTO>();
+        try
+        {
+            return await _petRepository.GetPets();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while getting pets");
+            return StatusCode(500, "An error occurred while processing your request.");
+        }
     }
 
     [HttpGet("{id:int}", Name = "getPet")]
     public async Task<ActionResult<PetDTO>> Get(int id)
     {
-        return await Get<Pet, PetDTO>(id);
+        try
+        {
+            var petDto = await _petRepository.GetPet(id);
+
+            if (petDto == null)
+            {
+                return NotFound();
+            }
+
+            return petDto;
+        }
+        catch (System.Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while getting a pet");
+            return StatusCode(500, "An error occurred while processing your request.");
+        }
     }
 
     [HttpPost]
@@ -41,16 +57,9 @@ public class PetsController : MyCustomControllerBase<PetsController>
     {
         try
         {
-            var pet = _mapper.Map<Pet>(createPetDTO);
+            var petDto = await _petRepository.CreatePet(createPetDTO);
 
-            pet.CreationDate = DateTime.Now;
-
-            _dbContext.Add(pet);
-            await _dbContext.SaveChangesAsync();
-
-            var petDto = _mapper.Map<PetDTO>(pet);
-
-            return CreatedAtRoute("getPet", new { id = pet.Id }, petDto);
+            return CreatedAtRoute("getPet", new { id = petDto.Id }, petDto);
         }
         catch (Exception ex)
         {
@@ -62,18 +71,60 @@ public class PetsController : MyCustomControllerBase<PetsController>
     [HttpPut("{id:int}")]
     public async Task<ActionResult> Put([FromBody] CreatePetDTO updatePetDTO, int id)
     {
-        return await Put<Pet, CreatePetDTO>(id, updatePetDTO);
+        try
+        {
+            await _petRepository.UpdatePet(id, updatePetDTO);
+
+            return NoContent();
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while updating a pet");
+            return StatusCode(500, "An error occurred while processing your request.");
+        }
     }
 
     [HttpPatch("{id:int}")]
     public async Task<ActionResult> Patch(int id, JsonPatchDocument<PatchPetDTO> jsonPatchDocument)
     {
-        return await Patch<Pet, PatchPetDTO>(id, jsonPatchDocument);
+        try
+        {
+            await _petRepository.PatchPet(id, jsonPatchDocument);
+
+            return NoContent();
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while patching a pet");
+            return StatusCode(500, "An error occurred while processing your request.");
+        }
     }
 
     [HttpDelete("{id:int}")]
     public async Task<ActionResult> Delete(int id)
     {
-        return await Delete<Pet>(id);
+        try
+        {
+            await _petRepository.RemovePet(id);
+
+            return NoContent();
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while deleting a pet");
+            return StatusCode(500, "An error occurred while processing your request.");
+        }
     }
 }
